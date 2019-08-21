@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = "texttable"
-  s.version     = "0.5.0"
+  s.version     = "0.6.0"
   s.author      = "Steve Shreeve"
   s.email       = "steve.shreeve@gmail.com"
   s.summary     = "An easy way to print rows and columns as simple tables"
