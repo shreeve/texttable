@@ -4,6 +4,65 @@ class TextTable
   def initialize
     @cols = Hash.new{|h,k| h[k] = h.size}
     @rows = []
+    @vals = nil
+    @row = 0
+  end
+
+  def index(field)
+    case field
+    when String, Symbol
+      field = field.to_s
+      index = @cols[field] || @cols[field.downcase.gsub(/\W/,'_')]
+      index
+    when Numeric
+      field
+    else
+      raise "invalid field index #{field.inspect}"
+    end
+  end
+
+  def [](key, val=nil)
+    @vals ||= @rows[@row]
+    index = index(key)
+    value = @vals[index] if index
+    value.nil? ? val : value
+  end
+
+  def row(row=nil)
+    row or return @row
+    @vals = @rows[@row = row]
+    self
+  end
+
+  def row=(row)
+    @vals = @rows[@row = row]
+    @row
+  end
+
+  def vals
+    @vals ||= @rows[@row]
+  end
+
+  def each
+    @rows or raise "no rows defined"
+    @rows.each_with_index {|_, row| yield(row(row)) }
+  end
+
+  def method_missing(field, *args)
+    field = field.to_s
+    equal = field.chomp!("=")
+    index = index(field)
+    if equal
+      index ||= @cols[field]
+      value = vals[index] = args.first
+    elsif index
+      raise "variable lookup ignores arguments" unless args.empty?
+      value = vals&.slice(index)
+    # else
+    #   value = "" # failover to ""
+    end
+    # value == false ? value : (value || "") # failover to ""
+    value
   end
 
   def add(hash)
