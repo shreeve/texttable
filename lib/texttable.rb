@@ -1,19 +1,19 @@
 class TextTable
-  attr_accessor :cols, :rows
+  attr_accessor :values, :rows
 
-  def initialize
-    @cols = Hash.new{|h,k| h[k] = h.size}
+  def initialize(cols=nil)
+    @cols = Hash.new {|h,k| h[k] = h.size}
     @rows = []
-    @vals = nil
+    @values = nil
     @row = 0
+    cols.each {|col| index!(col) } if cols.is_a?(Array)
   end
 
-  def index(field)
+  def index(field, auto=false)
     case field
     when String, Symbol
       field = field.to_s
-      index = @cols[field] || @cols[field.downcase.gsub(/\W/,'_')]
-      index
+      index = @cols.key?(field) ? @cols[field] : auto ? @cols[field] : nil
     when Numeric
       field
     else
@@ -21,26 +21,27 @@ class TextTable
     end
   end
 
-  def [](key, val=nil)
-    @vals ||= @rows[@row]
-    index = index(key)
-    value = @vals[index] if index
-    value.nil? ? val : value
+  def index!(field)
+    index(field, true)
+  end
+
+  def fields
+    @cols.keys
   end
 
   def row(row=nil)
     row or return @row
-    @vals = @rows[@row = row]
+    @values = @rows[@row = row]
     self
   end
 
   def row=(row)
-    @vals = @rows[@row = row]
+    @values = @rows[@row = row]
     @row
   end
 
   def vals
-    @vals ||= @rows[@row]
+    @values ||= @rows[@row] ||= []
   end
 
   def each
@@ -48,26 +49,33 @@ class TextTable
     @rows.each_with_index {|_, row| yield(row(row)) }
   end
 
+  def [](field, val=nil)
+    index = index(field)
+    value = vals[index] if index
+    value.nil? ? val : value
+  end
+
+  def []=(field, value)
+    index = index!(field)
+    vals[index] = value
+  end
+
   def method_missing(field, *args)
     field = field.to_s
-    equal = field.chomp!("=")
-    index = index(field)
+    equal = field.chomp!('=')
+    index = index(field, equal)
     if equal
-      index ||= @cols[field]
       value = vals[index] = args.first
     elsif index
       raise "variable lookup ignores arguments" unless args.empty?
-      value = vals&.slice(index)
-    # else
-    #   value = "" # failover to ""
+      value = vals[index]
     end
-    # value == false ? value : (value || "") # failover to ""
     value
   end
 
   def add(hash)
-    @rows << (vals = [])
-    hash.each {|k, v| vals[@cols[k]] = v}
+    @values = @rows[@row = @rows.size] = []
+    hash.each {|k, v| @values[@cols[k]] = v}
   end
 
   def show
