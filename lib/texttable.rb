@@ -25,6 +25,10 @@ class TextTable
     index(field, true)
   end
 
+  def size
+    @rows.size
+  end
+
   def fields
     @cols.keys
   end
