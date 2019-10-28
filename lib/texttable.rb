@@ -26,7 +26,7 @@ class TextTable
   end
 
   def convert_key(key)
-    key.to_s.gsub(/\W/, '_').gsub(/(.)([A-Z])/, '\1_\2').downcase # allow CamelCase
+    key.to_s.gsub(/\W/, '_').gsub(/([^_])([A-Z])/, '\1_\2').downcase # allow CamelCase
     # key.to_s.gsub(/\W/, '_').downcase # allow non-word chars
     # key.to_s.downcase # force downcase
   end
