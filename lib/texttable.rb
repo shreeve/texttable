@@ -1,9 +1,9 @@
 class TextTable
   attr_accessor :values, :rows
 
-  def initialize(cols=nil)
+  def initialize(cols=nil, rows=nil)
     @cols = Hash.new {|h,k| h[k] = h.size}
-    @rows = []
+    @rows = rows || []
     @values = nil
     @row = 0
     cols.each {|col| index!(col) } if cols.is_a?(Array)
