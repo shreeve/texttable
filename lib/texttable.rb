@@ -130,3 +130,9 @@ class TextTable
     end
   end
 end
+
+class ActiveRecord::Result
+  def +@
+    TextTable.new(columns, rows)
+  end
+end
