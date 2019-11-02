@@ -90,12 +90,12 @@ class TextTable
 
   def show
     join = " | "
-    both = [cols.keys] + rows
+    both = [@cols.keys] + rows
     flip = both.transpose
     wide = flip.map {|row| row.map {|col| col.to_s.size }.max }
     pict = wide.map {|len| "%-#{len}.#{len}s" }.join(join)
     pict = [join, pict, join].join.strip
-    line = (pict % ([""] * cols.size)).tr("| ", "+-")
+    line = (pict % ([""] * @cols.size)).tr("| ", "+-")
     seen = -1
     puts "", line
     both.each do |vals|
