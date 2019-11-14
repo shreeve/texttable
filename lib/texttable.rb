@@ -83,9 +83,14 @@ class TextTable
     value
   end
 
-  def add(hash)
+  def add(obj)
     @values = @rows[@row = @rows.size] = []
-    hash.each {|k, v| @values[@cols[k]] = v}
+    case obj
+      when Hash  then obj.each {|k, v| @values[@cols[k]] = v}
+      when Array then @values.replace(obj)
+      else raise "unable to add #{obj.class} objects"
+    end
+    self
   end
 
   def show
@@ -112,22 +117,25 @@ class TextTable
     csv[:encoding] = encoding + ":UTF-8" if encoding
     csv[:col_sep ] = sep
     csv = CSV.new($stdout, csv)
-    csv << cols.keys
-    rows.each {|vals| csv << vals}
+    csv << @cols.keys
+    @rows.each {|vals| csv << vals}
+    nil
   end
   def tsv; csv("\t"); end
   def psv; csv("|" ); end
 
   def sql(table='table', quote: false)
     q = quote ? '`' : ''
-    flip = cols.invert
-    rows.each do |vals|
+    flip = @cols.invert
+    @rows.each do |vals|
       list = vals.each_with_index.inject([]) do |list, (item, i)|
+        item = item.to_s #!# FIXME: force all to a string for now...
         list << "#{q}#{flip[i]}#{q}='#{item.gsub("'","''")}'" if item =~ /\S/
         list
       end
       puts "insert into #{q}#{table}#{q} set #{list * ', '};" if !list.empty?
     end
+    nil
   end
 end
 
