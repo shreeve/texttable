@@ -1,12 +1,19 @@
 class TextTable
   attr_accessor :values, :rows
 
-  def initialize(cols=nil, rows=nil)
+  def initialize(*args)
+    if args[0].is_a?(Array)
+      cols, *rows = args
+      rows = rows[0] if rows[0].is_a?(Array)
+    else
+      cols = args
+      rows = []
+    end
     @cols = Hash.new {|h,k| h[k] = h.size}
-    @rows = rows || []
+    @rows = rows
     @values = nil
     @row = 0
-    cols.each {|col| index!(col) } if cols.is_a?(Array)
+    cols.each {|col| index!(col) }
   end
 
   def index(field, auto=false)
