@@ -92,7 +92,8 @@ class TextTable
     value
   end
 
-  def add(obj)
+  def add(obj, *args)
+    obj = [obj, *args] if args.size > 0
     @values = @rows[@row = @rows.size] = []
     case obj
       when Hash  then obj.each {|k, v| @values[@cols[k]] = v}
