@@ -59,6 +59,14 @@ class TextTable
     @row
   end
 
+  def next!(step=1)
+    row(@row += step) if @row < (size - step)
+  end
+
+  def prev!(step=1)
+    row(@row -= step) if @row > 0
+  end
+
   def vals
     @values ||= @rows[@row] ||= []
   end
