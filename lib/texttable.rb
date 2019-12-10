@@ -111,7 +111,12 @@ class TextTable
     self
   end
 
-  def show
+  def show(*)
+    self
+  end
+
+  def show!(list=nil)
+    meth = list.is_a?(Array) ? list.method(:push) : method(:puts)
     join = " | "
     both = [@cols.keys] + rows
     flip = both.transpose
@@ -120,12 +125,12 @@ class TextTable
     pict = [join, pict, join].join.strip
     line = (pict % ([""] * @cols.size)).tr("| ", "+-")
     seen = -1
-    puts "", line
+    meth["", line]
     both.each do |vals|
-      puts pict % vals
-      puts line if (seen += 1) == 0
+      meth[pict % vals]
+      meth[line] if (seen += 1) == 0
     end
-    puts line, "#{seen} rows displayed", ""
+    meth[line, "#{seen} rows displayed", ""]
     self
   end
 
