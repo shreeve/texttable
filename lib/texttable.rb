@@ -166,4 +166,4 @@ class ActiveRecord::Result
   def +@
     TextTable.new(columns, rows)
   end
-end
+end if defined?(ActiveRecord)
