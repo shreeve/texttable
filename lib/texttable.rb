@@ -2,13 +2,11 @@ class TextTable
   attr_accessor :values, :rows
 
   def initialize(*args)
-    if args[0].is_a?(Array)
-      cols, *rows = args
-      rows = rows[0] if rows[0].is_a?(Array)
-    else
-      cols = args
-      rows = []
-    end
+    cols = args
+    cols        =  cols[0] if           cols[0].is_a?(Array) && cols[0][0].is_a?(Array)
+    cols, *rows =  cols    if           cols[0].is_a?(Array)
+    rows        = *rows[0] if  rows &&  rows[0].is_a?(Array) && rows[0][0].is_a?(Array)
+    rows        = []       if !rows || !rows[0].is_a?(Array)
     @cols = Hash.new {|h,k| h[k] = h.size}
     @rows = rows
     @values = nil
