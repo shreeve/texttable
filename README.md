@@ -1,8 +1,8 @@
 # texttable
 
-`texttable` is a Ruby gem that provides an easy way to print rows and columns as simple tables.
+`texttable` is a Ruby gem that provides an easy way to ingest, manage, and output rows and columns as simple tables.
 
-## Examples
+## Simple Example
 
 This code:
 
@@ -29,4 +29,35 @@ Will produce:
 | Sally | 25  | Salt Lake    |
 +-------+-----+--------------+
 4 rows displayed
+```
+
+## Loading Example
+
+This code:
+
+```ruby
+require "texttable"
+
+info = TextTable.csv("data.csv")
+info.show!
+```
+
+With the file `data.csv`:
+
+```csv
+id,first_name,last_name,email,cell,dept,photo,status
+28,Mark,Jones,mark@bigcompany.com,800-555-1000,Finance,mark-jones.jpg,2
+29,Sally,Miller,sally@bigcompany.com,800-555-2000,Accounting,sally-miller.jpg,1
+```
+
+Will produce:
+
+```text
++----+------------+-----------+----------------------+--------------+------------+------------------+--------+
+| id | first_name | last_name | email                | cell         | dept       | photo            | status |
++----+------------+-----------+----------------------+--------------+------------+------------------+--------+
+| 28 | Mark       | Jones     | mark@bigcompany.com  | 800-555-1000 | Finance    | mark-jones.jpg   | 2      |
+| 29 | Sally      | Miller    | sally@bigcompany.com | 800-555-2000 | Accounting | sally-miller.jpg | 1      |
++----+------------+-----------+----------------------+--------------+------------+------------------+--------+
+2 rows displayed
 ```
