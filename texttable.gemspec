@@ -2,10 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name        = "texttable"
-  s.version     = "1.0.7"
+  s.version     = "1.1.0"
   s.author      = "Steve Shreeve"
   s.email       = "steve.shreeve@gmail.com"
-  s.summary     = "An easy way to print rows and columns as simple tables"
+  s.summary     = "An easy way to work with rows and columns as simple tables"
   s.description = "This gem will auto-size based on column widths."
   s.homepage    = "https://github.com/shreeve/texttable"
   s.license     = "MIT"
