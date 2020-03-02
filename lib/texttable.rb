@@ -157,7 +157,7 @@ class TextTable
   def tsv; csv("\t"); end
   def psv; csv("|" ); end
 
-  def sql(table='table', quote: false)
+  def sql(table='table', quote: false, timestamps: false, verb: 'insert')
     q = quote ? '`' : ''
     flip = @cols.invert
     @rows.each do |vals|
@@ -166,7 +166,8 @@ class TextTable
         list << "#{q}#{flip[i]}#{q}='#{item.gsub("'","''")}'" if item =~ /\S/
         list
       end
-      puts "insert into #{q}#{table}#{q} set #{list * ', '};" if !list.empty?
+      list.push('created_at=now(), updated_at=now()') if timestamps
+      puts "#{verb} into #{q}#{table}#{q} set #{list * ', '};" if !list.empty?
     end
     nil
   end
