@@ -128,15 +128,20 @@ class TextTable
   def show!(list=nil)
     meth = list.is_a?(Array) ? list.method(:push) : method(:puts)
     join = " | "
-    both = [@cols.keys] + rows
-    flip = both.transpose
-    wide = flip.map {|row| row.map {|col| col.to_s.size }.max }
-    pict = wide.map {|len| "%-#{len}.#{len}s" }.join(join)
+    size = @cols.size
+    full = [@cols.keys] + rows
+    full.each_with_index do |vals, i| # only when asymmetric
+      miss = size - vals.size
+      full[i] += [nil] * miss  if miss > 0
+      full[i] = vals[0...size] if miss < 0
+    end
+    lens = full.map {|r| r.map {|c| c.to_s.size}}.transpose.map(&:max)
+    pict = lens.map {|len| "%-#{len}.#{len}s" }.join(join)
     pict = [join, pict, join].join.strip
-    line = (pict % ([""] * @cols.size)).tr("| ", "+-")
+    line = (pict % ([""] * size)).tr("| ", "+-")
     seen = -1
     meth["", line]
-    both.each do |vals|
+    full.each do |vals|
       meth[pict % vals]
       meth[line] if (seen += 1) == 0
     end
