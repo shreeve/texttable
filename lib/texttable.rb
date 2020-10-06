@@ -154,6 +154,14 @@ class TextTable
     self
   end
 
+  def lookup!(field)
+    @rows or raise "no rows defined"
+    index = index(field)
+    lookup = {}
+    @rows.each_with_index {|cols, i| lookup[cols[index]] = i}
+    lookup
+  end
+
   def csv(sep=',', encoding: nil)
     require 'csv'
     csv = {}
