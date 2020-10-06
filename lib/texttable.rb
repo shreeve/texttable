@@ -12,6 +12,10 @@ class TextTable
     end
     def tsv(*args, **kw); csv(args.shift, "\t", *args, **kw); end
     def psv(*args, **kw); csv(args.shift, "|" , *args, **kw); end
+
+    def add(*args)
+      new.add(*args)
+    end
   end
 
   def initialize(*args)
