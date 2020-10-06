@@ -24,7 +24,7 @@ class TextTable
     @rows = rows
     @values = nil
     @row = 0
-    cols.each {|col| index!(col) }
+    cols.each_with_index {|col, i| index!(col || i) }
   end
 
   def index(field, auto=false)
