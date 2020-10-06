@@ -2,15 +2,16 @@ class TextTable
   attr_accessor :values, :rows
 
   class << self
-    def csv(src, sep=',', encoding: nil)
+    def csv(src, sep=',', encoding: nil, **kw)
       require 'csv'
       new CSV.read(src || ARGF, {
         col_sep:  sep,
         encoding: encoding ? encoding + ":UTF-8" : nil,
+        **kw
       }.compact)
     end
-    def tsv(*args); csv(args.shift, "\t", *args); end
-    def psv(*args); csv(args.shift, "|" , *args); end
+    def tsv(*args, **kw); csv(args.shift, "\t", *args, **kw); end
+    def psv(*args, **kw); csv(args.shift, "|" , *args, **kw); end
   end
 
   def initialize(*args)
