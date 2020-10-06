@@ -157,8 +157,9 @@ class TextTable
   def csv(sep=',', encoding: nil)
     require 'csv'
     csv = {}
-    csv[:encoding] = encoding + ":UTF-8" if encoding
-    csv[:col_sep ] = sep
+    csv[:encoding   ] = encoding + ":UTF-8" if encoding
+    csv[:col_sep    ] = sep
+    csv[:quote_empty] = false #!# TODO: make this an option
     csv = CSV.new($stdout, csv)
     csv << @cols.keys
     @rows.each {|vals| csv << vals}
