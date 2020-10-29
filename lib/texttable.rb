@@ -162,19 +162,20 @@ class TextTable
     lookup
   end
 
-  def csv(sep=',', encoding: nil)
+  def csv(sep=',', encoding: nil, **kw)
     require 'csv'
-    csv = {}
-    csv[:encoding   ] = encoding + ":UTF-8" if encoding
-    csv[:col_sep    ] = sep
-    csv[:quote_empty] = false #!# TODO: make this an option
-    csv = CSV.new($stdout, csv)
+    csv = CSV.new($stdout, {
+      col_sep:     sep,
+      encoding:    encoding ? encoding + ":UTF-8" : nil,
+      quote_empty: false, #!# TODO: make this an option
+      **kw
+    })
     csv << @cols.keys
     @rows.each {|vals| csv << vals}
     nil
   end
-  def tsv; csv("\t"); end
-  def psv; csv("|" ); end
+  def tsv(**kw); csv("\t", **kw); end
+  def psv(**kw); csv("|" , **kw); end
 
   def sql(table='table', quote: false, timestamps: false, verb: 'insert')
     q = quote ? '`' : ''
