@@ -16,6 +16,27 @@ class TextTable
     def add(*args)
       new.add(*args)
     end
+
+    def load(data, delim="\t", headers=true)
+      case data
+      when String
+        if data.include?(delim) # string
+          text = data
+        elsif File.exist?(data) # filename
+          text = File.read(data)
+        end
+      when File, ARGF
+        text = data.read
+      end
+
+      text or raise "unable to load #{data.inspect}"
+      rows = text.split(/\r?\n/).map {|line| line.split(delim).map {|part| part.strip}}
+      info = new
+      rows.shift.each_with_index {|col, i| info.index!(col || i) } if headers
+      info.rows = rows
+      info.row(0)
+      info
+    end
   end
 
   def initialize(*args)
@@ -26,8 +47,7 @@ class TextTable
     rows        = []       if !rows || !rows[0].is_a?(Array) || rows[0].empty?
     @cols = Hash.new {|h,k| h[k] = h.size}
     @rows = rows
-    @values = nil
-    @row = 0
+    row(0)
     cols.each_with_index {|col, i| index!(col || i) }
   end
 
@@ -91,6 +111,10 @@ class TextTable
     @rows.each_with_index {|_, row| yield(row(row)) }
   end
 
+  def each_pair
+    @cols.each {|col, pos| yield col, @values[pos] }
+  end
+
   def [](field, val=nil)
     index = index(field)
     value = vals[index] if index
@@ -125,6 +149,8 @@ class TextTable
     end
     self
   end
+
+  alias :<< :add
 
   def show(*)
     self
@@ -164,7 +190,8 @@ class TextTable
 
   def csv(sep=',', encoding: nil, **kw)
     require 'csv'
-    csv = CSV.new($stdout, {
+    out = kw.key?(:out) ? (kw.delete(:out) || "").dup : nil
+    csv = CSV.new(out || $stdout, {
       col_sep:     sep,
       encoding:    encoding ? encoding + ":UTF-8" : nil,
       quote_empty: false, #!# TODO: make this an option
@@ -172,12 +199,12 @@ class TextTable
     })
     csv << @cols.keys
     @rows.each {|vals| csv << vals}
-    nil
+    out
   end
   def tsv(**kw); csv("\t", **kw); end
   def psv(**kw); csv("|" , **kw); end
 
-  def sql(table='table', quote: false, timestamps: false, verb: 'insert')
+  def sql(table='table', quote: false, timestamps: false, verb: 'insert', out: nil)
     q = quote ? '`' : ''
     flip = @cols.invert
     @rows.each do |vals|
@@ -187,9 +214,12 @@ class TextTable
         list
       end
       list.push('created_at=now(), updated_at=now()') if timestamps
-      puts "#{verb} into #{q}#{table}#{q} set #{list * ', '};" if !list.empty?
+      if !list.empty?
+        line = "#{verb} into #{q}#{table}#{q} set #{list * ', '};"
+        out ? (out << line) : puts(line)
+      end
     end
-    nil
+    out
   end
 end
 
