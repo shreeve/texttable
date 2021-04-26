@@ -188,6 +188,10 @@ class TextTable
     self
   end
 
+  def as_json(obj = defined?(ConfigHash) ? +{} : {})
+    (@rows || []).map {|r| r.each_with_index.inject(obj) {|h, (v, c)| h[fields[c]] = v; h }}
+  end
+
   def csv(sep=',', encoding: nil, **kw)
     require 'csv'
     out = kw.key?(:out) ? (kw.delete(:out) || "").dup : nil
