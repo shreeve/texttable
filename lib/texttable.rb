@@ -51,6 +51,14 @@ class TextTable
     cols.each_with_index {|col, i| index!(col || i) }
   end
 
+  def convert_key(key)
+    key.
+      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+      gsub(/([a-z\d])([A-Z])/, '\1_\2').
+      gsub(/\W/, '_').
+      downcase
+  end
+
   def index(field, auto=false)
     case field
     when String, Symbol
@@ -67,12 +75,6 @@ class TextTable
     index(field, true)
   end
 
-  def convert_key(key)
-    key.
-      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
-      gsub(/([a-z\d])([A-Z])/, '\1_\2').
-      gsub(/\W/, '_').
-      downcase
   end
 
   def size
@@ -186,8 +188,6 @@ class TextTable
     lookup = {}
     @rows.each_with_index {|cols, i| lookup[cols[index]] = i}
     lookup
-  end
-
   def csv(sep=',', encoding: nil, **kw)
     require 'csv'
     out = kw.key?(:out) ? (kw.delete(:out) || "").dup : nil
