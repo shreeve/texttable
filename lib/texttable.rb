@@ -147,15 +147,19 @@ class TextTable
     value
   end
 
-  def add(obj, *args)
+  def update(obj, *args)
     obj = [obj, *args] if args.size > 0
-    @values = @rows[@row = @rows.size] = []
     case obj
       when Hash  then obj.each {|k, v| @values[index(k.to_s, true)] = v }
       when Array then @values.replace(obj)
       else raise "unable to add #{obj.class} objects"
     end
     self
+  end
+
+  def add(obj, *args)
+    @values = @rows[@row = @rows.size] = []
+    update(obj, *args)
   end
 
   alias :<< :add
