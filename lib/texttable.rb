@@ -230,9 +230,3 @@ class TextTable
     out
   end
 end
-
-class ActiveRecord::Result
-  def +@
-    TextTable.new(columns, rows)
-  end
-end if defined?(ActiveRecord)
