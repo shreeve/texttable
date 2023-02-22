@@ -170,7 +170,7 @@ class TextTable
 
   def show!(list=nil)
     meth = list.is_a?(Array) ? list.method(:push) : method(:puts)
-    join = " | "
+    join = " │ "
     size = @cols.size
     full = [@cols.keys] + rows
     full.each_with_index do |vals, i| # only when asymmetric
@@ -181,7 +181,7 @@ class TextTable
     lens = full.map {|r| r.map {|c| c.to_s.size}}.transpose.map(&:max)
     pict = lens.map {|len| "%-#{len}.#{len}s" }.join(join)
     pict = [join, pict, join].join.strip
-    line = (pict % ([""] * size)).tr("| ", "+-")
+    line = (pict % ([""] * size)).tr("│ ", "•─")
     seen = -1
     meth["", line]
     full.each do |vals|
