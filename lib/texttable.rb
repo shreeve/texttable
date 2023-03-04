@@ -123,6 +123,11 @@ class TextTable
     @cols.each {|col, pos| yield col, @values[pos] }
   end
 
+  def map
+    @rows or raise "no rows defined"
+    @rows.map.with_index {|values, row| yield(row(row)) }
+  end
+
   def [](field, val=nil)
     index = index(field)
     value = vals[index] if index
@@ -194,6 +199,10 @@ class TextTable
 
   def as_json(obj = defined?(ConfigHash) ? +{} : {})
     (@rows || []).map {|r| r.each_with_index.inject(obj) {|h, (v, c)| h[fields[c]] = v; h }}
+  end
+
+  def to_hash
+    Hash[@cols.keys.zip(@values)]
   end
 
   def csv(sep=',', encoding: nil, **kw)
